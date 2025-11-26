@@ -42,15 +42,15 @@ export function TaskTable({
     editingTask && editingTask.id && editingTask.id === task.id;
 
   return (
-    <div>
-      <table>
-        <thead>
-          <tr>
-            <th>제목</th>
-            <th>상태</th>
-            <th>우선순위</th>
-            <th>생성일</th>
-            <th>액션</th>
+    <div className="overflow-hidden rounded-lg border bg-white">
+      <table className="min-w-full border-collapse bg-white">
+        <thead className="bg-slate-50">
+          <tr className="text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+            <th className="px-4 py-3">제목</th>
+            <th className="px-4 py-3">상태</th>
+            <th className="px-4 py-3">우선순위</th>
+            <th className="px-4 py-3">생성일</th>
+            <th className="px-4 py-3 text-right">액션</th>
           </tr>
         </thead>
         <tbody>
@@ -58,11 +58,15 @@ export function TaskTable({
             tasks.map((task) => {
               const editing = isEditing(task);
               return (
-                <tr key={task.id}>
-                  <td>
-                    <div>
+                <tr
+                  key={task.id}
+                  className="border-t text-sm transition-colors hover: bg-slate-50"
+                >
+                  <td className="px-4 py-3 align-middle">
+                    <div className="flex flex-col gap-1">
                       {editing ? (
                         <input
+                          className="w-full rounded-md border border-slate-300 px-2 py-1 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
                           value={editingTask.title}
                           onChange={(e) =>
                             setEditingTask((prev) => ({
@@ -73,13 +77,18 @@ export function TaskTable({
                           placeholder="제목을 입력하세요"
                         />
                       ) : (
-                        <span>{task.title}</span>
+                        <span className="font-medium text-slate-900">
+                          {task.title}
+                        </span>
                       )}
+                      <span className="text-xs text-slate-500">
+                        ID: {task.id}
+                      </span>
                     </div>
                   </td>
 
                   {/* 상태 */}
-                  <td>
+                  <td className="px-4 py-3 align-middle">
                     {editing ? (
                       <select
                         value={editingTask.priority}

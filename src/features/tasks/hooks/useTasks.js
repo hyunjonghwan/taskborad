@@ -45,6 +45,8 @@ export function useTasks() {
     isLoading,
     isError,
     error,
+    totalCount: data?.length || 0,
+    filterdCount: filterdTasks.length || 0,
     deleteTask: (id) => deleteMutation(id),
     deletePending: deleteMutation.isPending,
     updateTask: ({ id, title, priority }) =>
