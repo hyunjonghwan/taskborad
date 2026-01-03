@@ -34,7 +34,11 @@ export function useTasks() {
       if (priority !== "all" && task.priority !== priority) return false;
       if (search.trim()) {
         const term = search.trim().toLowerCase();
-        if (!task.title.toLowerCase().includes(term)) return false;
+        if (
+          !task.title.toLowerCase().includes(term) &&
+          !task.owner.toLowerCase().includes(term)
+        )
+          return false;
       }
 
       return true;
@@ -49,10 +53,10 @@ export function useTasks() {
     filterdCount: filterdTasks.length || 0,
     deleteTask: (id) => deleteMutation(id),
     deletePending: deleteMutation.isPending,
-    updateTask: ({ id, title, priority }) =>
+    updateTask: ({ id, title, priority, status }) =>
       updateMutation({
         id,
-        data: { title, priority },
+        data: { title, priority, status },
       }),
     updatePending: updateMutation.isPending,
   };
