@@ -2,7 +2,8 @@
 
 import dayjs from "dayjs";
 import { useMemo, useState } from "react";
-import { X } from "lucide-react";
+import { ArrowUpRight, X } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { Badge } from "@/shared/ui/Badge";
 import { Button } from "@/shared/ui/Button";
 import { Input } from "@/shared/ui/Input";
@@ -68,6 +69,7 @@ export function TaskTable({
 }) {
   const [editingTask, setEditingTask] = useState(null);
   const [openTaskId, setOpenTaskId] = useState(null);
+  const router = useRouter();
 
   const selectedTask = useMemo(
     () => tasks?.find((task) => task.id === openTaskId) ?? null,
@@ -295,7 +297,21 @@ export function TaskTable({
                 type="button"
                 variant="ghost"
                 size="icon"
+                onClick={() => {
+                  if (selectedTask) {
+                    router.push(`/tasks/${selectedTask.id}`);
+                  }
+                }}
+                aria-label="상세 페이지로 이동"
+              >
+                <ArrowUpRight className="h-4 w-4" />
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
                 onClick={() => setOpenTaskId(null)}
+                aria-label="드로어 닫기"
               >
                 <X className="h-4 w-4" />
               </Button>
