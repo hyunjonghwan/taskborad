@@ -1,7 +1,29 @@
 "use client";
 
 import dayjs from "dayjs";
-import { Fragment, useState } from "react";
+import { useMemo, useState } from "react";
+import { X } from "lucide-react";
+import { Badge } from "@/shared/ui/Badge";
+import { Button } from "@/shared/ui/Button";
+import { Input } from "@/shared/ui/Input";
+import { Select } from "@/shared/ui/Select";
+import {
+  Drawer,
+  DrawerBody,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+} from "@/shared/ui/Drawer";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/shared/ui/Table";
 
 const statusLabels = {
   todo: "대기",
@@ -10,11 +32,17 @@ const statusLabels = {
   done: "완료",
 };
 
-const statusStyles = {
-  todo: "border-slate-200 bg-slate-50 text-slate-600",
-  "in-progress": "border-blue-100 bg-blue-50 text-blue-600",
-  blocked: "border-amber-100 bg-amber-50 text-amber-700",
-  done: "border-emerald-100 bg-emerald-50 text-emerald-700",
+const statusVariants = {
+  todo: "default",
+  "in-progress": "info",
+  blocked: "warning",
+  done: "success",
+};
+
+const priorityVariants = {
+  low: "default",
+  medium: "info",
+  high: "warning",
 };
 
 const priorityLabels = {
@@ -40,6 +68,11 @@ export function TaskTable({
 }) {
   const [editingTask, setEditingTask] = useState(null);
   const [openTaskId, setOpenTaskId] = useState(null);
+
+  const selectedTask = useMemo(
+    () => tasks?.find((task) => task.id === openTaskId) ?? null,
+    [openTaskId, tasks]
+  );
 
   if (isLoading) {
     return (
@@ -77,217 +110,266 @@ export function TaskTable({
 
   return (
     <div className="overflow-hidden rounded-lg border border-slate-200 bg-white">
-      <table className="min-w-full border-collapse bg-white">
-        <thead className="bg-slate-50">
-          <tr className="text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
-            <th className="px-4 py-3">작업명</th>
-            <th className="px-4 py-3">상태</th>
-            <th className="px-4 py-3">우선순위</th>
-            <th className="px-4 py-3">담당자</th>
-            <th className="px-4 py-3">기한</th>
-            <th className="px-4 py-3">업데이트</th>
-            <th className="px-4 py-3 text-right">작업</th>
-          </tr>
-        </thead>
-        <tbody>
+      <Table>
+        <TableHeader className="bg-slate-50">
+          <TableRow className="border-0">
+            <TableHead className="px-4">작업명</TableHead>
+            <TableHead className="px-4">상태</TableHead>
+            <TableHead className="px-4">우선순위</TableHead>
+            <TableHead className="px-4">담당자</TableHead>
+            <TableHead className="px-4">기한</TableHead>
+            <TableHead className="px-4">업데이트</TableHead>
+            <TableHead className="px-4 text-right">작업</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
           {tasks && tasks.length > 0 ? (
             tasks.map((task) => {
               const editing = isEditing(task);
-              const isOpen = openTaskId === task.id;
               return (
-                <Fragment key={task.id}>
-                  <tr className="border-t text-sm transition-colors hover:bg-slate-50">
-                    <td className="px-4 py-3 align-middle">
-                      <div className="flex flex-col gap-1">
-                        {editing ? (
-                          <input
-                            className="w-full rounded-md border border-slate-300 px-2 py-1 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                            value={editingTask.title}
-                            onChange={(e) =>
-                              setEditingTask((prev) => ({
-                                ...prev,
-                                title: e.target.value,
-                              }))
-                            }
-                            placeholder="제목을 입력하세요"
-                          />
-                        ) : (
-                          <button
+                <TableRow key={task.id} className="text-sm">
+                  <TableCell className="px-4">
+                    <div className="flex flex-col gap-1">
+                      {editing ? (
+                        <Input
+                          className="h-8"
+                          value={editingTask.title}
+                          onChange={(e) =>
+                            setEditingTask((prev) => ({
+                              ...prev,
+                              title: e.target.value,
+                            }))
+                          }
+                          placeholder="제목을 입력하세요"
+                        />
+                      ) : (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="h-auto justify-start px-0 text-left text-slate-900 hover:text-blue-600"
+                          onClick={() =>
+                            setOpenTaskId((prev) =>
+                              prev === task.id ? null : task.id
+                            )
+                          }
+                        >
+                          {task.title}
+                        </Button>
+                      )}
+                      <span className="text-xs text-slate-500">ID: {task.id}</span>
+                    </div>
+                  </TableCell>
+
+                  <TableCell className="px-4">
+                    {editing ? (
+                      <Select
+                        value={editingTask.status}
+                        onChange={(e) =>
+                          setEditingTask((prev) => ({
+                            ...prev,
+                            status: e.target.value,
+                          }))
+                        }
+                        className="h-8"
+                      >
+                        <option value="todo">대기</option>
+                        <option value="in-progress">진행 중</option>
+                        <option value="blocked">보류</option>
+                        <option value="done">완료</option>
+                      </Select>
+                    ) : (
+                      <Badge variant={statusVariants[task.status]}>
+                        {statusLabels[task.status]}
+                      </Badge>
+                    )}
+                  </TableCell>
+
+                  <TableCell className="px-4">
+                    {editing ? (
+                      <Select
+                        value={editingTask.priority}
+                        onChange={(e) =>
+                          setEditingTask((prev) => ({
+                            ...prev,
+                            priority: e.target.value,
+                          }))
+                        }
+                        className="h-8"
+                      >
+                        <option value="high">높음</option>
+                        <option value="medium">보통</option>
+                        <option value="low">낮음</option>
+                      </Select>
+                    ) : (
+                      <Badge variant={priorityVariants[task.priority]}>
+                        {priorityLabels[task.priority]}
+                      </Badge>
+                    )}
+                  </TableCell>
+
+                  <TableCell className="px-4 text-slate-700">
+                    {task.owner}
+                  </TableCell>
+                  <TableCell className="px-4">
+                    {formatDate(task.dueDate)}
+                  </TableCell>
+                  <TableCell className="px-4 text-slate-500">
+                    {formatDate(task.updatedAt)}
+                  </TableCell>
+                  <TableCell className="px-4 text-right">
+                    <div className="flex justify-end gap-2 text-xs">
+                      {editing ? (
+                        <>
+                          <Button
                             type="button"
-                            className="text-left font-medium text-slate-900 hover:text-blue-600"
-                            onClick={() =>
-                              setOpenTaskId((prev) =>
-                                prev === task.id ? null : task.id
-                              )
-                            }
-                            aria-expanded={isOpen}
+                            size="sm"
+                            className="h-7"
+                            onClick={saveEditing}
+                            disabled={updatePending}
                           >
-                            {task.title}
-                          </button>
-                        )}
-                        <span className="text-xs text-slate-500">
-                          ID: {task.id}
-                        </span>
-                      </div>
-                    </td>
-
-                    <td className="px-4 py-3 align-middle">
-                      {editing ? (
-                        <select
-                          value={editingTask.status}
-                          onChange={(e) =>
-                            setEditingTask((prev) => ({
-                              ...prev,
-                              status: e.target.value,
-                            }))
-                          }
-                          className="rounded-md border border-slate-200 px-2 py-1 text-sm"
-                        >
-                          <option value="todo">대기</option>
-                          <option value="in-progress">진행 중</option>
-                          <option value="blocked">보류</option>
-                          <option value="done">완료</option>
-                        </select>
+                            저장
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            className="h-7"
+                            onClick={() => setEditingTask(null)}
+                          >
+                            취소
+                          </Button>
+                        </>
                       ) : (
-                        <span
-                          className={`inline-flex items-center rounded-full border px-2 py-1 text-xs font-semibold ${
-                            statusStyles[task.status]
-                          }`}
-                        >
-                          {statusLabels[task.status]}
-                        </span>
+                        <>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            className="h-7"
+                            onClick={() => startEditing(task)}
+                          >
+                            수정
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="destructive"
+                            size="sm"
+                            className="h-7"
+                            onClick={() => onDelete(task.id)}
+                            disabled={deletePending}
+                          >
+                            삭제
+                          </Button>
+                        </>
                       )}
-                    </td>
-
-                    <td className="px-4 py-3 align-middle">
-                      {editing ? (
-                        <select
-                          value={editingTask.priority}
-                          onChange={(e) =>
-                            setEditingTask((prev) => ({
-                              ...prev,
-                              priority: e.target.value,
-                            }))
-                          }
-                          className="rounded-md border border-slate-200 px-2 py-1 text-sm"
-                        >
-                          <option value="high">높음</option>
-                          <option value="medium">보통</option>
-                          <option value="low">낮음</option>
-                        </select>
-                      ) : (
-                        <span>{priorityLabels[task.priority]}</span>
-                      )}
-                    </td>
-
-                    <td className="px-4 py-3 align-middle text-slate-700">
-                      {task.owner}
-                    </td>
-                    <td className="px-4 py-3 align-middle">
-                      {formatDate(task.dueDate)}
-                    </td>
-                    <td className="px-4 py-3 align-middle text-slate-500">
-                      {formatDate(task.updatedAt)}
-                    </td>
-                    <td className="px-4 py-3 text-right">
-                      <div className="flex justify-end gap-2 text-xs">
-                        {editing ? (
-                          <>
-                            <button
-                              type="button"
-                              className="rounded-md border border-blue-200 bg-blue-50 px-2 py-1 font-semibold text-blue-700 disabled:opacity-50"
-                              onClick={saveEditing}
-                              disabled={updatePending}
-                            >
-                              저장
-                            </button>
-                            <button
-                              type="button"
-                              className="rounded-md border border-slate-200 px-2 py-1 font-semibold text-slate-600"
-                              onClick={() => setEditingTask(null)}
-                            >
-                              취소
-                            </button>
-                          </>
-                        ) : (
-                          <>
-                            <button
-                              type="button"
-                              className="rounded-md border border-slate-200 px-2 py-1 font-semibold text-slate-600 hover:bg-slate-50"
-                              onClick={() => startEditing(task)}
-                            >
-                              수정
-                            </button>
-                            <button
-                              type="button"
-                              className="rounded-md border border-red-200 px-2 py-1 font-semibold text-red-600 hover:bg-red-50 disabled:opacity-50"
-                              onClick={() => onDelete(task.id)}
-                              disabled={deletePending}
-                            >
-                              삭제
-                            </button>
-                          </>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                  {isOpen ? (
-                    <tr className="border-t bg-slate-50/70 text-sm text-slate-600">
-                      <td colSpan={7} className="px-4 py-4">
-                        <div className="rounded-md border border-slate-200 bg-white px-4 py-3 shadow-sm">
-                          <div className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-                            작업 상세
-                          </div>
-                          <div className="mt-3 grid gap-2 text-sm md:grid-cols-3">
-                            <div>
-                              <span className="text-xs font-semibold text-slate-400">
-                                담당자
-                              </span>
-                              <p className="text-slate-700">{task.owner}</p>
-                            </div>
-                            <div>
-                              <span className="text-xs font-semibold text-slate-400">
-                                상태
-                              </span>
-                              <p className="text-slate-700">
-                                {statusLabels[task.status]}
-                              </p>
-                            </div>
-                            <div>
-                              <span className="text-xs font-semibold text-slate-400">
-                                우선순위
-                              </span>
-                              <p className="text-slate-700">
-                                {priorityLabels[task.priority]}
-                              </p>
-                            </div>
-                            <div className="md:col-span-3">
-                              <span className="text-xs font-semibold text-slate-400">
-                                설명
-                              </span>
-                              <p className="text-slate-700">{task.description}</p>
-                            </div>
-                          </div>
-                        </div>
-                      </td>
-                    </tr>
-                  ) : null}
-                </Fragment>
+                    </div>
+                  </TableCell>
+                </TableRow>
               );
             })
           ) : (
-            <tr>
-              <td
+            <TableRow>
+              <TableCell
                 className="px-4 py-8 text-center text-sm text-slate-500"
                 colSpan={7}
               >
                 아직 등록된 작업이 없습니다. 상단의 &quot;새 작업 추가&quot;
                 버튼으로 첫 작업을 만들어보세요.
-              </td>
-            </tr>
+              </TableCell>
+            </TableRow>
           )}
-        </tbody>
-      </table>
+        </TableBody>
+      </Table>
+      <Drawer open={Boolean(selectedTask)} onOpenChange={() => setOpenTaskId(null)}>
+        <DrawerContent>
+          <DrawerHeader>
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <DrawerTitle>{selectedTask?.title}</DrawerTitle>
+                <DrawerDescription>
+                  작업 상세 정보를 확인하고 상태를 변경할 수 있습니다.
+                </DrawerDescription>
+              </div>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={() => setOpenTaskId(null)}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+          </DrawerHeader>
+          <DrawerBody className="space-y-4">
+            {selectedTask ? (
+              <>
+                <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
+                  <div className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+                    기본 정보
+                  </div>
+                  <div className="mt-3 grid gap-3 text-sm">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-semibold text-slate-400">
+                        담당자
+                      </span>
+                      <span className="text-slate-700">{selectedTask.owner}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-semibold text-slate-400">
+                        상태
+                      </span>
+                      <Badge variant={statusVariants[selectedTask.status]}>
+                        {statusLabels[selectedTask.status]}
+                      </Badge>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-semibold text-slate-400">
+                        우선순위
+                      </span>
+                      <Badge variant={priorityVariants[selectedTask.priority]}>
+                        {priorityLabels[selectedTask.priority]}
+                      </Badge>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-semibold text-slate-400">
+                        기한
+                      </span>
+                      <span className="text-slate-700">
+                        {formatDate(selectedTask.dueDate)}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-semibold text-slate-400">
+                        마지막 업데이트
+                      </span>
+                      <span className="text-slate-700">
+                        {formatDate(selectedTask.updatedAt)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div className="rounded-lg border border-slate-200 bg-white p-4">
+                  <div className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+                    설명
+                  </div>
+                  <p className="mt-2 text-sm text-slate-700">
+                    {selectedTask.description}
+                  </p>
+                </div>
+              </>
+            ) : null}
+          </DrawerBody>
+          <DrawerFooter>
+            <div className="flex items-center justify-between text-xs text-slate-500">
+              <span>ID: {selectedTask?.id}</span>
+              <Button type="button" variant="outline" size="sm" onClick={() => setOpenTaskId(null)}>
+                닫기
+              </Button>
+            </div>
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
     </div>
   );
 }
