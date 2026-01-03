@@ -1,7 +1,21 @@
-import { supabaseServer } from "@/lib/supabase";
+import { getSupabaseServer } from "@/lib/supabase";
 import { NextResponse } from "next/server";
 
+const getSupabaseClient = () => {
+  const { client, error } = getSupabaseServer();
+  if (error) {
+    return NextResponse.json({ error }, { status: 500 });
+  }
+
+  return client;
+};
+
 export async function PATCH(req, { params }) {
+  const supabaseServer = getSupabaseClient();
+  if (supabaseServer instanceof NextResponse) {
+    return supabaseServer;
+  }
+
   const { id } = params;
   const body = await req.json();
   const { title, description, status, priority } = body;
@@ -27,13 +41,18 @@ export async function PATCH(req, { params }) {
 }
 
 export async function DELETE(req, { params }) {
-  const { id } = await req.json;
+  const supabaseServer = getSupabaseClient();
+  if (supabaseServer instanceof NextResponse) {
+    return supabaseServer;
+  }
+
+  const { id } = params;
   const { error } = await supabaseServer.from("tasks").delete().eq("id", id);
 
   if (error) {
     console.error("DELETE ERROR", error);
     return NextResponse.json(
-      { error: "Failed DELETE", error },
+      { error: "Failed DELETE", details: error },
       { status: 500 }
     );
   }
