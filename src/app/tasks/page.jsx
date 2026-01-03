@@ -1,5 +1,5 @@
-import { TaskPage } from "@/features/tasks/components/TaskPage";
+import { TaskBoard } from "@/widgets/ui/TaskBoard";
 
 export default function TaskRoutePage() {
-  return <TaskPage />;
+  return <TaskBoard />;
 }

@@ -1,9 +1,10 @@
 "use client";
-import { useTasks } from "../hooks/useTasks";
-import { TaskFilters } from "./TaskFilters";
-import { TaskTable } from "./TaskTable";
 
-export function TaskPage() {
+import { useTasks } from "@/features/view-task/hooks/useTasks";
+import { TaskFilters } from "@/features/view-task/ui/TaskFilters";
+import { TaskTable } from "@/features/view-task/ui/TaskTable";
+
+export function TaskBoard() {
   const {
     tasks,
     isLoading,

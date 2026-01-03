@@ -2,7 +2,7 @@
 
 import { useTaskFilterStore } from "@/store/taskFilterStore";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { deleteTask, fetchTasks, updateTask } from "../api";
+import { deleteTask, fetchTasks, updateTask } from "@/_core/task/repositories/taskApi";
 
 export function useTasks() {
   const { status, priority, search } = useTaskFilterStore();

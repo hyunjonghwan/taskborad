@@ -1,4 +1,7 @@
+"use client";
+
 import { forwardRef, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { cn } from "@/shared/lib/cn";
 
 export function Drawer({ open, onOpenChange, children }) {
@@ -24,7 +27,7 @@ export function Drawer({ open, onOpenChange, children }) {
 
   if (!open) return null;
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 z-50 flex justify-end">
       <button
         type="button"
@@ -33,7 +36,8 @@ export function Drawer({ open, onOpenChange, children }) {
         onClick={() => onOpenChange(false)}
       />
       {children}
-    </div>
+    </div>,
+    document.body
   );
 }
 
