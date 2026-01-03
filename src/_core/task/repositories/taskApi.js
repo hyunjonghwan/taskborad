@@ -1,9 +1,14 @@
-import { taskListSchema } from "@/_core/task/entities/taskSchema";
+import { taskListSchema, taskSchema } from "@/_core/task/entities/taskSchema";
 import { http } from "@/shared/lib/http";
 
 export async function fetchTasks() {
   const res = await http.get("/tasks");
   return taskListSchema.parse(res.data.data);
+}
+
+export async function fetchTask(id) {
+  const res = await http.get(`/tasks/${id}`);
+  return taskSchema.parse(res.data.data);
 }
 
 export async function createTask(payload) {

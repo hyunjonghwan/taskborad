@@ -68,6 +68,7 @@ let tasks = [...mockTasks];
 
 export const taskRepository = {
   getTasks: async () => tasks,
+  getTask: async (id) => tasks.find((task) => task.id === id),
   updateTask: async (id, payload) => {
     tasks = tasks.map((task) =>
       task.id === id
