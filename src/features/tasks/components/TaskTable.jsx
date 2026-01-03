@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Fragment, useState } from "react";
 
 const dayjs = require("dayjs");
 
@@ -20,6 +20,7 @@ export function TaskTable({
   updatePending,
 }) {
   const [editingTask, setEditingTask] = useState(null);
+  const [openTaskId, setOpenTaskId] = useState(null);
 
   if (isLoading) {
     return (
@@ -57,77 +58,119 @@ export function TaskTable({
           {tasks && tasks.length > 0 ? (
             tasks.map((task) => {
               const editing = isEditing(task);
+              const isOpen = openTaskId === task.id;
               return (
-                <tr
-                  key={task.id}
-                  className="border-t text-sm transition-colors hover: bg-slate-50"
-                >
-                  <td className="px-4 py-3 align-middle">
-                    <div className="flex flex-col gap-1">
+                <Fragment key={task.id}>
+                  <tr
+                    className="border-t text-sm transition-colors hover:bg-slate-50"
+                  >
+                    <td className="px-4 py-3 align-middle">
+                      <div className="flex flex-col gap-1">
+                        {editing ? (
+                          <input
+                            className="w-full rounded-md border border-slate-300 px-2 py-1 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            value={editingTask.title}
+                            onChange={(e) =>
+                              setEditingTask((prev) => ({
+                                ...prev,
+                                title: e.target.value,
+                              }))
+                            }
+                            placeholder="제목을 입력하세요"
+                          />
+                        ) : (
+                          <button
+                            type="button"
+                            className="text-left font-medium text-slate-900 hover:text-blue-600"
+                            onClick={() =>
+                              setOpenTaskId((prev) =>
+                                prev === task.id ? null : task.id
+                              )
+                            }
+                            aria-expanded={isOpen}
+                          >
+                            {task.title}
+                          </button>
+                        )}
+                        <span className="text-xs text-slate-500">
+                          ID: {task.id}
+                        </span>
+                      </div>
+                    </td>
+
+                    {/* 상태 */}
+                    <td className="px-4 py-3 align-middle">
                       {editing ? (
-                        <input
-                          className="w-full rounded-md border border-slate-300 px-2 py-1 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                          value={editingTask.title}
+                        <select
+                          value={editingTask.priority}
                           onChange={(e) =>
                             setEditingTask((prev) => ({
                               ...prev,
-                              title: e.target.value,
+                              priority: e.target.value,
                             }))
                           }
-                          placeholder="제목을 입력하세요"
-                        />
+                        >
+                          <option value="low">낮음</option>
+                          <option value="medium">보통</option>
+                          <option value="high">높음</option>
+                        </select>
                       ) : (
-                        <span className="font-medium text-slate-900">
-                          {task.title}
-                        </span>
+                        <span>{task.priority}</span>
                       )}
-                      <span className="text-xs text-slate-500">
-                        ID: {task.id}
-                      </span>
-                    </div>
-                  </td>
+                    </td>
 
-                  {/* 상태 */}
-                  <td className="px-4 py-3 align-middle">
-                    {editing ? (
-                      <select
-                        value={editingTask.priority}
-                        onChange={(e) =>
-                          setEditingTask((prev) => ({
-                            ...prev,
-                            priority: e.target.value,
-                          }))
-                        }
-                      >
-                        <option value="low">낮음</option>
-                        <option value="medium">보통</option>
-                        <option value="high">높음</option>
-                      </select>
-                    ) : (
-                      <span>{task.priority}</span>
-                    )}
-                  </td>
+                    {/* 생성일 */}
+                    <td>{formatDate(task.created_dt || task.createdAt)}</td>
 
-                  {/* 생성일 */}
-                  <td>{formatDate(task.created_dt || task.createdAt)}</td>
-
-                  {/* 액션 */}
-                  <td>
-                    <div>
-                      {editing ? (
-                        <>
-                          <button>저장</button>
-                          <button>취소</button>
-                        </>
-                      ) : (
-                        <>
-                          <button>수정</button>
-                          <button>삭제</button>
-                        </>
-                      )}
-                    </div>
-                  </td>
-                </tr>
+                    {/* 액션 */}
+                    <td>
+                      <div>
+                        {editing ? (
+                          <>
+                            <button>저장</button>
+                            <button>취소</button>
+                          </>
+                        ) : (
+                          <>
+                            <button>수정</button>
+                            <button>삭제</button>
+                          </>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                  {isOpen ? (
+                    <tr className="border-t bg-slate-50/70 text-sm text-slate-600">
+                      <td colSpan={5} className="px-4 py-4">
+                        <div className="rounded-md border border-slate-200 bg-white px-4 py-3 shadow-sm">
+                          <div className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+                            작업 상세
+                          </div>
+                          <div className="mt-2 space-y-1 text-sm">
+                            <p>
+                              <span className="font-medium text-slate-700">
+                                제목:
+                              </span>{" "}
+                              {task.title}
+                            </p>
+                            <p>
+                              <span className="font-medium text-slate-700">
+                                우선순위:
+                              </span>{" "}
+                              {task.priority}
+                            </p>
+                            <p>
+                              <span className="font-medium text-slate-700">
+                                생성일:
+                              </span>{" "}
+                              {formatDate(task.created_dt || task.createdAt)}
+                            </p>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  ) : null}
+                </Fragment>
               );
             })
           ) : (
