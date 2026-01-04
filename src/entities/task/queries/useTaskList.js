@@ -1,6 +1,6 @@
 "use client";
 
-import { useTaskFilterStore } from "@/store/taskFilterStore";
+import { useTaskFilterStore } from "@/entities/task/store/taskFilterStore";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { deleteTask, fetchTasks, updateTask } from "@/_core/task/repositories/taskApi";
 
