@@ -1,42 +1,17 @@
 "use client";
 
-import dayjs from "dayjs";
 import { ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useTask } from "@/features/view-task/hooks/useTask";
+import { useTask } from "@/entities/task/queries/useTask";
 import { Badge } from "@/shared/ui/Badge";
 import { Button } from "@/shared/ui/Button";
-
-const statusLabels = {
-  todo: "대기",
-  "in-progress": "진행 중",
-  blocked: "보류",
-  done: "완료",
-};
-
-const statusVariants = {
-  todo: "default",
-  "in-progress": "info",
-  blocked: "warning",
-  done: "success",
-};
-
-const priorityVariants = {
-  low: "default",
-  medium: "info",
-  high: "warning",
-};
-
-const priorityLabels = {
-  low: "낮음",
-  medium: "보통",
-  high: "높음",
-};
-
-function formatDate(value) {
-  if (!value) return "-";
-  return dayjs(value).format("YYYY-MM-DD");
-}
+import {
+  formatTaskDate,
+  priorityLabels,
+  priorityVariants,
+  statusLabels,
+  statusVariants,
+} from "@/entities/task/lib/taskDisplay";
 
 export function TaskDetailPage({ taskId }) {
   const router = useRouter();
@@ -105,15 +80,15 @@ export function TaskDetailPage({ taskId }) {
             <div className="mt-3 grid gap-3 text-sm">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-semibold text-slate-400">생성일</span>
-                <span className="text-slate-700">{formatDate(task.createdAt)}</span>
+                <span className="text-slate-700">{formatTaskDate(task.createdAt)}</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-xs font-semibold text-slate-400">기한</span>
-                <span className="text-slate-700">{formatDate(task.dueDate)}</span>
+                <span className="text-slate-700">{formatTaskDate(task.dueDate)}</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-xs font-semibold text-slate-400">마지막 업데이트</span>
-                <span className="text-slate-700">{formatDate(task.updatedAt)}</span>
+                <span className="text-slate-700">{formatTaskDate(task.updatedAt)}</span>
               </div>
             </div>
           </div>

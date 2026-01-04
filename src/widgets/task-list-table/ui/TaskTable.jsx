@@ -1,6 +1,5 @@
 "use client";
 
-import dayjs from "dayjs";
 import { useMemo, useState } from "react";
 import { ArrowUpRight, X } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -25,37 +24,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/shared/ui/Table";
-
-const statusLabels = {
-  todo: "대기",
-  "in-progress": "진행 중",
-  blocked: "보류",
-  done: "완료",
-};
-
-const statusVariants = {
-  todo: "default",
-  "in-progress": "info",
-  blocked: "warning",
-  done: "success",
-};
-
-const priorityVariants = {
-  low: "default",
-  medium: "info",
-  high: "warning",
-};
-
-const priorityLabels = {
-  low: "낮음",
-  medium: "보통",
-  high: "높음",
-};
-
-function formatDate(value) {
-  if (!value) return "-";
-  return dayjs(value).format("YYYY-MM-DD");
-}
+import {
+  formatTaskDate,
+  priorityLabels,
+  priorityVariants,
+  statusLabels,
+  statusVariants,
+} from "@/entities/task/lib/taskDisplay";
 
 export function TaskTable({
   tasks,
@@ -214,10 +189,10 @@ export function TaskTable({
                     {task.owner}
                   </TableCell>
                   <TableCell className="px-4">
-                    {formatDate(task.dueDate)}
+                    {formatTaskDate(task.dueDate)}
                   </TableCell>
                   <TableCell className="px-4 text-slate-500">
-                    {formatDate(task.updatedAt)}
+                    {formatTaskDate(task.updatedAt)}
                   </TableCell>
                   <TableCell className="px-4 text-right">
                     <div className="flex justify-end gap-2 text-xs">
@@ -352,7 +327,7 @@ export function TaskTable({
                         기한
                       </span>
                       <span className="text-slate-700">
-                        {formatDate(selectedTask.dueDate)}
+                        {formatTaskDate(selectedTask.dueDate)}
                       </span>
                     </div>
                     <div className="flex items-center justify-between">
@@ -360,7 +335,7 @@ export function TaskTable({
                         마지막 업데이트
                       </span>
                       <span className="text-slate-700">
-                        {formatDate(selectedTask.updatedAt)}
+                        {formatTaskDate(selectedTask.updatedAt)}
                       </span>
                     </div>
                   </div>

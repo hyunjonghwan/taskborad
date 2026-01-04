@@ -1,8 +1,8 @@
 "use client";
 
-import { useTasks } from "@/features/view-task/hooks/useTasks";
-import { TaskFilters } from "@/features/view-task/ui/TaskFilters";
-import { TaskTable } from "@/features/view-task/ui/TaskTable";
+import { useTasks } from "@/entities/task/queries/useTaskList";
+import { TaskFilters } from "@/features/filter-task/ui/TaskFilters";
+import { TaskTable } from "@/widgets/task-list-table/ui/TaskTable";
 
 export function TaskBoard() {
   const {

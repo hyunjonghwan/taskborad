@@ -1,4 +1,4 @@
-import { TaskDetailPage } from "@/widgets/ui/TaskDetailPage";
+import { TaskDetailPage } from "@/widgets/task-detail/ui/TaskDetailPage";
 
 export default async function TaskDetailRoutePage({ params }) {
   const { id } = await params;

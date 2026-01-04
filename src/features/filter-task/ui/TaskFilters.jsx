@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { useForm, useWatch } from "react-hook-form";
-import { useTaskFilterStore } from "@/store/taskFilterStore";
+import { useTaskFilterStore } from "@/entities/task/store/taskFilterStore";
 import { Button } from "@/shared/ui/Button";
 import { Input } from "@/shared/ui/Input";
 import { Select } from "@/shared/ui/Select";

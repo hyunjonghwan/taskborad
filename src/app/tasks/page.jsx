@@ -1,4 +1,4 @@
-import { TaskBoard } from "@/widgets/ui/TaskBoard";
+import { TaskBoard } from "@/widgets/task-board/ui/TaskBoard";
 
 export default function TaskRoutePage() {
   return <TaskBoard />;
